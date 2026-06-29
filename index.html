@@ -46,8 +46,8 @@
             <p class="text-sm text-gray-400"><span id="energy-text">500</span>/500 Clicks</p>
         </div>
 
-        <!-- SCREEN 2: AFFILIATE & PARRAINAGE -->
-        <div id="screen-affiliate" class="hidden flex flex-col items-center gap-4 w-full max-w-md">
+        <!-- SCREEN 2: FRIENDS (AFFILIATE ONLY) -->
+        <div id="screen-friends" class="hidden flex flex-col items-center gap-4 w-full max-w-md">
             <div class="bg-gray-800 p-6 rounded-2xl w-full text-center shadow-lg">
                 <h3 class="text-lg font-bold mb-2">Invite Friends & Earn 👥</h3>
                 <p class="text-xs text-gray-400 mb-4">Earn <span class="text-green-400 font-bold">20% commission</span> instantly every time your friend makes a withdraw!</p>
@@ -58,18 +58,26 @@
                     <button onclick="copyInviteLink()" class="bg-blue-600 text-xs px-3 py-1.5 rounded-lg font-bold hover:bg-blue-700">Copy</button>
                 </div>
             </div>
+        </div>
 
-            <!-- Withdraw Section inside Affiliate/Wallet -->
-            <div class="bg-gray-800 p-6 rounded-2xl w-full shadow-lg">
-                <h3 class="text-sm font-bold mb-2 text-yellow-400">Withdraw Balance 💳</h3>
-                <p class="text-xs text-gray-400 mb-4">Minimum withdraw: 50,000 🪙</p>
-                <button onclick="requestWithdraw()" class="w-full bg-green-600 hover:bg-green-700 font-bold py-3 rounded-xl text-sm transition">
+        <!-- SCREEN 3: WITHDRAW (WALLET ONLY) -->
+        <div id="screen-withdraw" class="hidden flex flex-col items-center gap-4 w-full max-w-md">
+            <div class="bg-gray-800 p-6 rounded-2xl w-full shadow-lg text-center">
+                <h3 class="text-lg font-bold mb-2 text-yellow-400">Withdraw Balance 💳</h3>
+                <p class="text-xs text-gray-400 mb-6">Minimum limit for payout: 50,000 🪙</p>
+                
+                <div class="mb-6">
+                    <p class="text-xs text-gray-500 mb-2">Your Current Funds</p>
+                    <p class="text-3xl font-black text-green-400 id='wallet-balance'">0 🪙</p>
+                </div>
+
+                <button onclick="requestWithdraw()" class="w-full bg-green-600 hover:bg-green-700 font-bold py-3 rounded-xl text-sm transition cursor-pointer">
                     Withdraw Now
                 </button>
             </div>
         </div>
 
-        <!-- SCREEN 3: OFFERWALLS & ADS (EARN) -->
+        <!-- SCREEN 4: OFFERWALLS & ADS (EARN) -->
         <div id="screen-earn" class="hidden flex flex-col gap-4 w-full max-w-md">
             <div class="bg-gray-800 p-4 rounded-xl flex justify-between items-center shadow">
                 <div>
@@ -90,13 +98,16 @@
 
     </main>
 
-    <!-- Bottom Navigation Bar -->
+    <!-- Bottom Navigation Bar (4 Options Now) -->
     <nav class="fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 flex justify-around p-2 z-50">
         <button onclick="switchScreen('tap')" class="flex flex-col items-center gap-1 text-yellow-400" id="nav-tap">
             <span class="text-xl">🎯</span><span class="text-xs">Tap</span>
         </button>
-        <button onclick="switchScreen('affiliate')" class="flex flex-col items-center gap-1 text-gray-400" id="nav-affiliate">
+        <button onclick="switchScreen('friends')" class="flex flex-col items-center gap-1 text-gray-400" id="nav-friends">
             <span class="text-xl">👥</span><span class="text-xs">Friends</span>
+        </button>
+        <button onclick="switchScreen('withdraw')" class="flex flex-col items-center gap-1 text-gray-400" id="nav-withdraw">
+            <span class="text-xl">💳</span><span class="text-xs">Withdraw</span>
         </button>
         <button onclick="switchScreen('earn')" class="flex flex-col items-center gap-1 text-gray-400" id="nav-earn">
             <span class="text-xl">💰</span><span class="text-xs">Earn</span>
@@ -115,7 +126,7 @@
         const tele = window.Telegram.WebApp;
         tele.expand();
         
-        const BACKEND_URL = "https://your-backend-render-link.com"; // Taw n-baddlouha kif n-hostouh
+        const BACKEND_URL = "https://your-backend-render-link.com"; 
         const user = tele.initDataUnsafe?.user;
         let userBalance = 0;
         let availableClicks = 500;
@@ -125,7 +136,6 @@
             document.getElementById('user-id').innerText = `ID: ${user.id}`;
             document.getElementById('user-avatar').innerText = (user.username ? user.username[0] : user.first_name[0]).toUpperCase();
             
-            // Set Dynamic Invite Link for Telegram Bot
             document.getElementById('invite-link').value = `https://t.me/ez_earns_bot/app?startapp=${user.id}`;
         }
 
@@ -135,9 +145,7 @@
             if (availableClicks > 0) {
                 userBalance += 1;
                 availableClicks -= 1;
-                document.getElementById('balance').innerText = `${userBalance} 🪙`;
-                document.getElementById('energy-text').innerText = availableClicks;
-                document.getElementById('energy-bar').style.width = `${(availableClicks / 500) * 100}%`;
+                updateBalanceUI();
             } else {
                 tele.HapticFeedback.notificationOccurred('error');
             }
@@ -151,25 +159,37 @@
             }
         }, 2000);
 
-        // 2. Navigation Logic (Mregla direct m3a l-Affiliate Screen)
+        function updateBalanceUI() {
+            document.getElementById('balance').innerText = `${userBalance} 🪙`;
+            document.getElementById('wallet-balance').innerText = `${userBalance} 🪙`;
+            document.getElementById('energy-text').innerText = availableClicks;
+            document.getElementById('energy-bar').style.width = `${(availableClicks / 500) * 100}%`;
+        }
+
+        // 2. Navigation Logic (Mregla b-4 Screens)
         function switchScreen(screen) {
             document.getElementById('screen-tap').classList.add('hidden');
-            document.getElementById('screen-affiliate').classList.add('hidden');
+            document.getElementById('screen-friends').classList.add('hidden');
+            document.getElementById('screen-withdraw').classList.add('hidden');
             document.getElementById('screen-earn').classList.add('hidden');
             
             document.getElementById('nav-tap').className = "flex flex-col items-center gap-1 text-gray-400";
-            document.getElementById('nav-affiliate').className = "flex flex-col items-center gap-1 text-gray-400";
+            document.getElementById('nav-friends').className = "flex flex-col items-center gap-1 text-gray-400";
+            document.getElementById('nav-withdraw').className = "flex flex-col items-center gap-1 text-gray-400";
             document.getElementById('nav-earn').className = "flex flex-col items-center gap-1 text-gray-400";
 
             if(screen === 'tap') {
                 document.getElementById('screen-tap').classList.remove('hidden');
                 document.getElementById('nav-tap').className = "flex flex-col items-center gap-1 text-yellow-400";
-            } else if (screen === 'affiliate') {
-                document.getElementById('screen-affiliate').classList.remove('hidden');
-                document.getElementById('nav-affiliate').className = "flex flex-col items-center gap-1 text-blue-400";
+            } else if (screen === 'friends') {
+                document.getElementById('screen-friends').classList.remove('hidden');
+                document.getElementById('nav-friends').className = "flex flex-col items-center gap-1 text-blue-400";
+            } else if (screen === 'withdraw') {
+                document.getElementById('screen-withdraw').classList.remove('hidden');
+                document.getElementById('nav-withdraw').className = "flex flex-col items-center gap-1 text-green-400";
             } else if (screen === 'earn') {
                 document.getElementById('screen-earn').classList.remove('hidden');
-                document.getElementById('nav-earn').className = "flex flex-col items-center gap-1 text-green-400";
+                document.getElementById('nav-earn').className = "flex flex-col items-center gap-1 text-purple-400";
             }
         }
 
@@ -180,7 +200,7 @@
             tele.showAlert("Invite link copied to clipboard! 🚀");
         }
 
-        // 3. Withdraw Simulation Trigger
+        // 3. Withdraw Trigger
         function requestWithdraw() {
             if (userBalance < 50000) {
                 tele.showAlert("Balancék mazal ne9es! Lezemik 50,000 🪙 3al-9ala.");
@@ -195,11 +215,11 @@
             if (AdController) {
                 AdController.show().then(() => {
                     userBalance += 50;
-                    document.getElementById('balance').innerText = `${userBalance} 🪙`;
+                    updateBalanceUI();
                 }).catch(() => { tele.showAlert("Kamel l-video lemejek points!"); });
             } else {
                 userBalance += 50;
-                document.getElementById('balance').innerText = `${userBalance} 🪙`;
+                updateBalanceUI();
             }
         });
 
