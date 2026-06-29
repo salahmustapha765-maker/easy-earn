@@ -12,7 +12,6 @@
     <script src="https://sad.adsgram.ai/js/tma.js"></script>
     
     <style>
-        /* Faza bch ma ynejemch l-user ya3mel zoom wala y-selecti l-kteba kif ycliki barcha */
         body { user-select: none; -webkit-user-select: none; touch-action: manipulation; }
     </style>
 </head>
@@ -38,31 +37,40 @@
         
         <!-- SCREEN 1: THE CLICKER (TAP) -->
         <div id="screen-tap" class="flex flex-col items-center justify-center gap-6 w-full">
-            <!-- Coin Button -->
             <button id="coin-btn" class="w-48 h-48 bg-gradient-to-br from-yellow-400 to-amber-600 rounded-full shadow-2xl flex items-center justify-center border-8 border-yellow-500 transform active:scale-95 transition-transform duration-75 cursor-pointer">
                 <span class="text-6xl">🪙</span>
             </button>
-            <!-- Energy Bar -->
             <div class="w-full max-w-xs bg-gray-700 h-4 rounded-full overflow-hidden">
                 <div id="energy-bar" class="bg-yellow-400 h-full transition-all duration-100" style="width: 100%;"></div>
             </div>
             <p class="text-sm text-gray-400"><span id="energy-text">500</span>/500 Clicks</p>
         </div>
 
-        <!-- SCREEN 2: FARMING -->
-        <div id="screen-farming" class="hidden flex flex-col items-center gap-6 w-full max-w-md">
+        <!-- SCREEN 2: AFFILIATE & PARRAINAGE -->
+        <div id="screen-affiliate" class="hidden flex flex-col items-center gap-4 w-full max-w-md">
             <div class="bg-gray-800 p-6 rounded-2xl w-full text-center shadow-lg">
-                <h3 class="text-lg font-bold mb-2">Passive Farming 🚀</h3>
-                <p class="text-sm text-gray-400 mb-6">Farm 200 points every 4 hours automatically!</p>
-                <button id="farm-btn" class="w-full bg-blue-600 hover:bg-blue-700 font-bold py-3 px-6 rounded-xl transition shadow-lg cursor-pointer">
-                    Start Farming
+                <h3 class="text-lg font-bold mb-2">Invite Friends & Earn 👥</h3>
+                <p class="text-xs text-gray-400 mb-4">Earn <span class="text-green-400 font-bold">20% commission</span> instantly every time your friend makes a withdraw!</p>
+                
+                <!-- Share Link Box -->
+                <div class="bg-gray-900 p-3 rounded-xl flex justify-between items-center mb-4 border border-gray-700">
+                    <input type="text" id="invite-link" readonly value="Loading link..." class="bg-transparent text-xs text-gray-300 w-full focus:outline-none">
+                    <button onclick="copyInviteLink()" class="bg-blue-600 text-xs px-3 py-1.5 rounded-lg font-bold hover:bg-blue-700">Copy</button>
+                </div>
+            </div>
+
+            <!-- Withdraw Section inside Affiliate/Wallet -->
+            <div class="bg-gray-800 p-6 rounded-2xl w-full shadow-lg">
+                <h3 class="text-sm font-bold mb-2 text-yellow-400">Withdraw Balance 💳</h3>
+                <p class="text-xs text-gray-400 mb-4">Minimum withdraw: 50,000 🪙</p>
+                <button onclick="requestWithdraw()" class="w-full bg-green-600 hover:bg-green-700 font-bold py-3 rounded-xl text-sm transition">
+                    Withdraw Now
                 </button>
             </div>
         </div>
 
         <!-- SCREEN 3: OFFERWALLS & ADS (EARN) -->
         <div id="screen-earn" class="hidden flex flex-col gap-4 w-full max-w-md">
-            <!-- Telegram Ads Button -->
             <div class="bg-gray-800 p-4 rounded-xl flex justify-between items-center shadow">
                 <div>
                     <h4 class="font-bold text-sm">Watch Video Ad 🎬</h4>
@@ -71,7 +79,6 @@
                 <button id="watch-ad-btn" class="bg-green-600 hover:bg-green-700 text-xs font-bold py-2 px-4 rounded-lg cursor-pointer">Watch</button>
             </div>
 
-            <!-- OGAds Offerwall Section -->
             <div class="bg-gray-800 p-4 rounded-xl shadow flex flex-col gap-3">
                 <h4 class="font-bold text-sm text-yellow-400">Premium CPA Tasks 🔥</h4>
                 <p class="text-xs text-gray-400">Complete tasks and download apps to earn big points!</p>
@@ -88,49 +95,43 @@
         <button onclick="switchScreen('tap')" class="flex flex-col items-center gap-1 text-yellow-400" id="nav-tap">
             <span class="text-xl">🎯</span><span class="text-xs">Tap</span>
         </button>
-        <button onclick="switchScreen('farming')" class="flex flex-col items-center gap-1 text-gray-400" id="nav-farming">
-            <span class="text-xl">🚜</span><span class="text-xs">Farm</span>
+        <button onclick="switchScreen('affiliate')" class="flex flex-col items-center gap-1 text-gray-400" id="nav-affiliate">
+            <span class="text-xl">👥</span><span class="text-xs">Friends</span>
         </button>
         <button onclick="switchScreen('earn')" class="flex flex-col items-center gap-1 text-gray-400" id="nav-earn">
             <span class="text-xl">💰</span><span class="text-xs">Earn</span>
         </button>
     </nav>
 
-    <!-- BANNER AD FIXED MEL LOUTA (MONETAG INTERGRATION) -->
+    <!-- BANNER AD FIXED MEL LOUTA (MONETAG) -->
     <div class="fixed bottom-14 left-0 right-0 h-12 bg-gray-950 flex items-center justify-center z-50 border-t border-gray-800">
         <script type="text/javascript">
-            atOptions = {
-                'key' : 'YOUR_MONETAG_BANNER_KEY',
-                'format' : 'iframe',
-                'height' : 50,
-                'width' : 320,
-                'params' : {}
-            };
+            atOptions = { 'key' : 'YOUR_MONETAG_BANNER_KEY', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };
         </script>
         <script type="text/javascript" src="//www.highperformanceformat.com/YOUR_MONETAG_BANNER_KEY/invoke.js"></script>
     </div>
 
-    <!-- LOGIC SCRIPT -->
     <script>
-        // Init Telegram WebApp API
         const tele = window.Telegram.WebApp;
-        tele.expand(); // Y7el el-app screen l-kolla f-tlifon
+        tele.expand();
         
-        // Get User Data from Telegram
+        const BACKEND_URL = "https://your-backend-render-link.com"; // Taw n-baddlouha kif n-hostouh
         const user = tele.initDataUnsafe?.user;
-        if (user) {
-            document.getElementById('user-name').innerText = user.username || `${user.first_name} ${user.last_name}`;
-            document.getElementById('user-id').innerText = `ID: ${user.id}`;
-            document.getElementById('user-avatar').innerText = (user.username ? user.username[0] : user.first_name[0]).toUpperCase();
-        }
-
-        // Local State Variables
         let userBalance = 0;
         let availableClicks = 500;
 
+        if (user) {
+            document.getElementById('user-name').innerText = user.username || `${user.first_name}`;
+            document.getElementById('user-id').innerText = `ID: ${user.id}`;
+            document.getElementById('user-avatar').innerText = (user.username ? user.username[0] : user.first_name[0]).toUpperCase();
+            
+            // Set Dynamic Invite Link for Telegram Bot
+            document.getElementById('invite-link').value = `https://t.me/ez_earns_bot/app?startapp=${user.id}`;
+        }
+
         // 1. Clicker Logic
         const coinBtn = document.getElementById('coin-btn');
-        coinBtn.addEventListener('click', (e) => {
+        coinBtn.addEventListener('click', () => {
             if (availableClicks > 0) {
                 userBalance += 1;
                 availableClicks -= 1;
@@ -138,65 +139,73 @@
                 document.getElementById('energy-text').innerText = availableClicks;
                 document.getElementById('energy-bar').style.width = `${(availableClicks / 500) * 100}%`;
             } else {
-                tele.HapticFeedback.notificationOccurred('error'); // Vibration sghira ken wfet el-energy
+                tele.HapticFeedback.notificationOccurred('error');
             }
         });
 
-        // Regen Energy b-shwaya (kima Notcoin)
         setInterval(() => {
             if (availableClicks < 500) {
                 availableClicks += 1;
                 document.getElementById('energy-text').innerText = availableClicks;
                 document.getElementById('energy-bar').style.width = `${(availableClicks / 500) * 100}%`;
             }
-        }, 2000); // +1 energy kol 2 seconds
+        }, 2000);
 
-        // 2. Navigation Logic
+        // 2. Navigation Logic (Mregla direct m3a l-Affiliate Screen)
         function switchScreen(screen) {
             document.getElementById('screen-tap').classList.add('hidden');
-            document.getElementById('screen-farming').classList.add('hidden');
+            document.getElementById('screen-affiliate').classList.add('hidden');
             document.getElementById('screen-earn').classList.add('hidden');
             
             document.getElementById('nav-tap').className = "flex flex-col items-center gap-1 text-gray-400";
-            document.getElementById('nav-farming').className = "flex flex-col items-center gap-1 text-gray-400";
+            document.getElementById('nav-affiliate').className = "flex flex-col items-center gap-1 text-gray-400";
             document.getElementById('nav-earn').className = "flex flex-col items-center gap-1 text-gray-400";
 
             if(screen === 'tap') {
                 document.getElementById('screen-tap').classList.remove('hidden');
                 document.getElementById('nav-tap').className = "flex flex-col items-center gap-1 text-yellow-400";
-            } else if (screen === 'farming') {
-                document.getElementById('screen-farming').classList.remove('hidden');
-                document.getElementById('nav-farming').className = "flex flex-col items-center gap-1 text-blue-400";
+            } else if (screen === 'affiliate') {
+                document.getElementById('screen-affiliate').classList.remove('hidden');
+                document.getElementById('nav-affiliate').className = "flex flex-col items-center gap-1 text-blue-400";
             } else if (screen === 'earn') {
                 document.getElementById('screen-earn').classList.remove('hidden');
                 document.getElementById('nav-earn').className = "flex flex-col items-center gap-1 text-green-400";
             }
         }
 
-        // 3. Adsgram Integration (Rewarded Video)
-        const AdController = window.Adsgram?.init({ blockId: "YOUR_ADSGRAM_BLOCK_ID" });
+        function copyInviteLink() {
+            const linkInput = document.getElementById('invite-link');
+            linkInput.select();
+            document.execCommand('copy');
+            tele.showAlert("Invite link copied to clipboard! 🚀");
+        }
 
+        // 3. Withdraw Simulation Trigger
+        function requestWithdraw() {
+            if (userBalance < 50000) {
+                tele.showAlert("Balancék mazal ne9es! Lezemik 50,000 🪙 3al-9ala.");
+                return;
+            }
+            tele.showAlert("Withdraw request sent! Processing... 💸");
+        }
+
+        // 4. Adsgram & Offerwall
+        const AdController = window.Adsgram?.init({ blockId: "36603" });
         document.getElementById('watch-ad-btn').addEventListener('click', () => {
             if (AdController) {
-                AdController.show().then((result) => {
+                AdController.show().then(() => {
                     userBalance += 50;
                     document.getElementById('balance').innerText = `${userBalance} 🪙`;
-                    tele.showAlert("Bravo! Khwaat 50 Points clean 🎉");
-                }).catch((result) => {
-                    tele.showAlert("Lezem t-kamel l-video bch takhou l-points 🕹️");
-                });
+                }).catch(() => { tele.showAlert("Kamel l-video lemejek points!"); });
             } else {
-                // Fallback ken network fih ghfsa (Test Ads mode)
                 userBalance += 50;
                 document.getElementById('balance').innerText = `${userBalance} 🪙`;
-                tele.showAlert("[Test Mode]: Ad finished, +50 points!");
             }
         });
 
-        // 4. Offerwall Logic (OGAds Open)
         function openOfferwall() {
             const ogadsURL = `https://your-offerwall-link.com/wall?aff_sub=${user ? user.id : 'guest'}`;
-            tele.openLink(ogadsURL); // Telegram y7el el-task list f-browser mregla
+            tele.openLink(ogadsURL);
         }
     </script>
 </body>
