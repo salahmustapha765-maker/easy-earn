@@ -133,10 +133,11 @@
         const tele = window.Telegram.WebApp;
         tele.expand();
         
+        const BACKEND_URL = "https://your-backend-render-link.com"; 
         const user = tele.initDataUnsafe?.user;
         let userBalance = 0;
         let availableClicks = 500;
-        let userIdStr = user ? user.id.toString() : "guest_user"; // Khoudh l-ID khass l-Adsgram
+        let userIdStr = user ? user.id.toString() : "guest_user"; 
 
         if (user) {
             document.getElementById('user-name').innerText = user.username || `${user.first_name}`;
@@ -166,7 +167,7 @@
         }, 2000);
 
         function updateBalanceUI() {
-            let usdValue = (userBalance * 0.00001).toFixed(4);
+            let usdValue = (userBalance * 0.00001).toFixed(4); // 1000 coin = 0.01$
             document.getElementById('balance').innerText = `${userBalance} 🪙`;
             document.getElementById('wallet-balance').innerText = `${userBalance} 🪙`;
             document.getElementById('wallet-usd').innerText = `$${usdValue}`;
@@ -250,7 +251,7 @@
             tele.showAlert("Withdraw request sent! Processing... 💸");
         }
 
-        // 4. Adsgram CORRECTION - Force initialization with Telegram User ID
+        // 4. Adsgram Strict Mode (No Fallback Loop)
         const AdController = window.Adsgram?.init({ blockId: "36603", userId: userIdStr });
 
         document.getElementById('watch-ad-btn').addEventListener('click', () => {
@@ -261,13 +262,10 @@
                     tele.showAlert("Bravo! Khwaat +70 🪙 Clean 🎉");
                 }).catch((err) => { 
                     console.log("Adsgram error:", err);
-                    tele.showAlert("Lezem t-kamel l-video bch takhou l-points 🕹️"); 
+                    tele.showAlert("Lezem t-kamel l-video lel l5er bch takhou l-points! 🎬"); 
                 });
             } else {
-                // Fallback test block local static
-                userBalance += 70;
-                updateBalanceUI();
-                tele.showAlert("[Local Test Mode]: Ad finished, +70 points!");
+                tele.showAlert("Adsgram is loading... Please try again inside Telegram bot! ⏳");
             }
         });
     </script>
