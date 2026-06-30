@@ -137,9 +137,7 @@
         const user = tele.initDataUnsafe?.user;
         let userBalance = 0;
         let availableClicks = 500;
-        
-        // STRICT USER ID PASSING
-        let userIdStr = user ? user.id.toString() : "guest_user"; 
+        let userIdStr = user ? user.id.toString() : "6382104"; 
 
         if (user) {
             document.getElementById('user-name').innerText = user.username || `${user.first_name}`;
@@ -147,7 +145,6 @@
             document.getElementById('user-avatar').innerText = (user.username ? user.username[0] : user.first_name[0]).toUpperCase();
             document.getElementById('invite-link').value = `https://t.me/ez_earns_bot/app?startapp=${user.id}`;
         } else {
-            // Static Fallback UI info for PC browser view (Real script will still execute via user ID string)
             document.getElementById('user-name').innerText = "Developer Profile";
             document.getElementById('user-id').innerText = "ID: 6382104";
             document.getElementById('user-avatar').innerText = "DEV";
@@ -175,7 +172,7 @@
         }, 2000);
 
         function updateBalanceUI() {
-            let usdValue = (userBalance * 0.00001).toFixed(4); // 1000 coin = 0.01$
+            let usdValue = (userBalance * 0.00001).toFixed(4);
             document.getElementById('balance').innerText = `${userBalance} 🪙`;
             document.getElementById('wallet-balance').innerText = `${userBalance} 🪙`;
             document.getElementById('wallet-usd').innerText = `$${usdValue}`;
@@ -263,25 +260,22 @@
             if (tele.showAlert) { tele.showAlert(msg); } else { alert(msg); }
         }
 
-        // 4. Adsgram REAL BLOCK ONLY - STRICT NO FALLBACKS
-        let AdController = null;
-        if (typeof window !== 'undefined' && window.Adsgram) {
-            // STRICTLY calls your explicit real production block id
-            AdController = window.Adsgram.init({ blockId: "36603", userId: userIdStr });
-        }
-
+        // 4. Adsgram REAL PRODUCTION TRIGGER (Strictly calling block 36603)
         document.getElementById('watch-ad-btn').addEventListener('click', () => {
-            if (AdController) {
+            if (window.Adsgram) {
+                // Runtime production instantiation to force network check
+                const AdController = window.Adsgram.init({ blockId: "36603", userId: userIdStr });
+                
                 AdController.show().then(() => {
                     userBalance += 70; 
                     updateBalanceUI();
-                    alertUser("Bravo! Khwaat +70 🪙 🎉");
+                    alertUser("Mabrouk! Khwaat +70 🪙 bel-pub el-79i9ya 🎉");
                 }).catch((err) => { 
                     console.log("Adsgram production error:", err);
                     alertUser("Lezem t-kamel l-video lel l5er bch takhou l-points! 🎬"); 
                 });
             } else {
-                alertUser("Adsgram script failed to connect to network. Turn off AdBlockers/Shields and open via Telegram! 🚨");
+                alertUser("Adsgram extension script is completely missing or blocked by your browser/AdBlocker extension! Please turn off Shields/AdBlock to load real ads. 🚨");
             }
         });
     </script>
