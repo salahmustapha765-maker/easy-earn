@@ -138,26 +138,20 @@
         let userBalance = 0;
         let availableClicks = 500;
         
-        // Setup Dynamic Block ID for PC Testing vs Mobile Live Telegram
-        let finalBlockId = "36603"; // Default Real Block ID
-        let userIdStr = "guest_pc_user";
+        // STRICT USER ID PASSING
+        let userIdStr = user ? user.id.toString() : "guest_user"; 
 
-        if (user && tele.initData) {
-            // Real User inside Telegram Environment
+        if (user) {
             document.getElementById('user-name').innerText = user.username || `${user.first_name}`;
             document.getElementById('user-id').innerText = `ID: ${user.id}`;
             document.getElementById('user-avatar').innerText = (user.username ? user.username[0] : user.first_name[0]).toUpperCase();
             document.getElementById('invite-link').value = `https://t.me/ez_earns_bot/app?startapp=${user.id}`;
-            userIdStr = user.id.toString();
         } else {
-            // Fallback UI data inside Local PC Web Browser
-            document.getElementById('user-name').innerText = "PC Test User";
-            document.getElementById('user-id').innerText = "ID: 9999999";
-            document.getElementById('user-avatar').innerText = "PC";
-            document.getElementById('invite-link').value = "https://t.me/ez_earns_bot/app?startapp=9999999";
-            
-            // Switch to Adsgram Official Test block ID so it opens smoothly on PC Chrome
-            finalBlockId = "2471"; 
+            // Static Fallback UI info for PC browser view (Real script will still execute via user ID string)
+            document.getElementById('user-name').innerText = "Developer Profile";
+            document.getElementById('user-id').innerText = "ID: 6382104";
+            document.getElementById('user-avatar').innerText = "DEV";
+            document.getElementById('invite-link').value = "https://t.me/ez_earns_bot/app?startapp=6382104";
         }
 
         // 1. Clicker Logic
@@ -181,7 +175,7 @@
         }, 2000);
 
         function updateBalanceUI() {
-            let usdValue = (userBalance * 0.00001).toFixed(4);
+            let usdValue = (userBalance * 0.00001).toFixed(4); // 1000 coin = 0.01$
             document.getElementById('balance').innerText = `${userBalance} 🪙`;
             document.getElementById('wallet-balance').innerText = `${userBalance} 🪙`;
             document.getElementById('wallet-usd').innerText = `$${usdValue}`;
@@ -269,10 +263,11 @@
             if (tele.showAlert) { tele.showAlert(msg); } else { alert(msg); }
         }
 
-        // 4. Adsgram Dynamic Auto-Initialization
+        // 4. Adsgram REAL BLOCK ONLY - STRICT NO FALLBACKS
         let AdController = null;
-        if (window.Adsgram) {
-            AdController = window.Adsgram.init({ blockId: finalBlockId, userId: userIdStr });
+        if (typeof window !== 'undefined' && window.Adsgram) {
+            // STRICTLY calls your explicit real production block id
+            AdController = window.Adsgram.init({ blockId: "36603", userId: userIdStr });
         }
 
         document.getElementById('watch-ad-btn').addEventListener('click', () => {
@@ -280,13 +275,13 @@
                 AdController.show().then(() => {
                     userBalance += 70; 
                     updateBalanceUI();
-                    alertUser("Bravo! Khwaat +70 🪙 Clean 🎉");
+                    alertUser("Bravo! Khwaat +70 🪙 🎉");
                 }).catch((err) => { 
-                    console.log("Adsgram error:", err);
+                    console.log("Adsgram production error:", err);
                     alertUser("Lezem t-kamel l-video lel l5er bch takhou l-points! 🎬"); 
                 });
             } else {
-                alertUser("Adsgram script failed to load. Please check your network or disable AdBlock! ⏳");
+                alertUser("Adsgram script failed to connect to network. Turn off AdBlockers/Shields and open via Telegram! 🚨");
             }
         });
     </script>
