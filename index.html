@@ -137,13 +137,27 @@
         const user = tele.initDataUnsafe?.user;
         let userBalance = 0;
         let availableClicks = 500;
-        let userIdStr = user ? user.id.toString() : "guest_user"; 
+        
+        // Setup Dynamic Block ID for PC Testing vs Mobile Live Telegram
+        let finalBlockId = "36603"; // Default Real Block ID
+        let userIdStr = "guest_pc_user";
 
-        if (user) {
+        if (user && tele.initData) {
+            // Real User inside Telegram Environment
             document.getElementById('user-name').innerText = user.username || `${user.first_name}`;
             document.getElementById('user-id').innerText = `ID: ${user.id}`;
             document.getElementById('user-avatar').innerText = (user.username ? user.username[0] : user.first_name[0]).toUpperCase();
             document.getElementById('invite-link').value = `https://t.me/ez_earns_bot/app?startapp=${user.id}`;
+            userIdStr = user.id.toString();
+        } else {
+            // Fallback UI data inside Local PC Web Browser
+            document.getElementById('user-name').innerText = "PC Test User";
+            document.getElementById('user-id').innerText = "ID: 9999999";
+            document.getElementById('user-avatar').innerText = "PC";
+            document.getElementById('invite-link').value = "https://t.me/ez_earns_bot/app?startapp=9999999";
+            
+            // Switch to Adsgram Official Test block ID so it opens smoothly on PC Chrome
+            finalBlockId = "2471"; 
         }
 
         // 1. Clicker Logic
@@ -154,7 +168,7 @@
                 availableClicks -= 1;
                 updateBalanceUI();
             } else {
-                tele.HapticFeedback.notificationOccurred('error');
+                if (tele.HapticFeedback) tele.HapticFeedback.notificationOccurred('error');
             }
         });
 
@@ -167,7 +181,7 @@
         }, 2000);
 
         function updateBalanceUI() {
-            let usdValue = (userBalance * 0.00001).toFixed(4); // 1000 coin = 0.01$
+            let usdValue = (userBalance * 0.00001).toFixed(4);
             document.getElementById('balance').innerText = `${userBalance} 🪙`;
             document.getElementById('wallet-balance').innerText = `${userBalance} 🪙`;
             document.getElementById('wallet-usd').innerText = `$${usdValue}`;
@@ -209,7 +223,7 @@
             const now = new Date().getTime();
 
             if (lastClaim && (now - lastClaim < 24 * 60 * 60 * 1000)) {
-                tele.showAlert("Arja3 ghodwa bch takhou bonus ekhar! 🗓️");
+                alertUser("Arja3 ghodwa bch takhou bonus ekhar! 🗓️");
                 return;
             }
 
@@ -217,7 +231,7 @@
             localStorage.setItem('lastCheckInClaim', now);
             updateBalanceUI();
             checkDailyStatusUI();
-            tele.showAlert("Mabrouk! Khwaat +50 🪙 mta3 el-yom 🎉");
+            alertUser("Mabrouk! Khwaat +50 🪙 mta3 el-yom 🎉");
         }
 
         function checkDailyStatusUI() {
@@ -240,32 +254,39 @@
             const linkInput = document.getElementById('invite-link');
             linkInput.select();
             document.execCommand('copy');
-            tele.showAlert("Invite link copied to clipboard! 🚀");
+            alertUser("Invite link copied to clipboard! 🚀");
         }
 
         function requestWithdraw() {
             if (userBalance < 300) {
-                tele.showAlert("Balancék mazal ne9es! Lezemik 300 🪙 3al-9ala.");
+                alertUser("Balancék mazal ne9es! Lezemik 300 🪙 3al-9ala.");
                 return;
             }
-            tele.showAlert("Withdraw request sent! Processing... 💸");
+            alertUser("Withdraw request sent! Processing... 💸");
         }
 
-        // 4. Adsgram Strict Mode (No Fallback Loop)
-        const AdController = window.Adsgram?.init({ blockId: "36603", userId: userIdStr });
+        function alertUser(msg) {
+            if (tele.showAlert) { tele.showAlert(msg); } else { alert(msg); }
+        }
+
+        // 4. Adsgram Dynamic Auto-Initialization
+        let AdController = null;
+        if (window.Adsgram) {
+            AdController = window.Adsgram.init({ blockId: finalBlockId, userId: userIdStr });
+        }
 
         document.getElementById('watch-ad-btn').addEventListener('click', () => {
             if (AdController) {
                 AdController.show().then(() => {
                     userBalance += 70; 
                     updateBalanceUI();
-                    tele.showAlert("Bravo! Khwaat +70 🪙 Clean 🎉");
+                    alertUser("Bravo! Khwaat +70 🪙 Clean 🎉");
                 }).catch((err) => { 
                     console.log("Adsgram error:", err);
-                    tele.showAlert("Lezem t-kamel l-video lel l5er bch takhou l-points! 🎬"); 
+                    alertUser("Lezem t-kamel l-video lel l5er bch takhou l-points! 🎬"); 
                 });
             } else {
-                tele.showAlert("Adsgram is loading... Please try again inside Telegram bot! ⏳");
+                alertUser("Adsgram script failed to load. Please check your network or disable AdBlock! ⏳");
             }
         });
     </script>
