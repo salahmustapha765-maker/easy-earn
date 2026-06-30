@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tounis Tap Earn</title>
-    <!-- Tailwind CSS bch el-design yji mreguel -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- Telegram WebApp SDK official -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Adsgram SDK Code -->
     <script src="https://sad.adsgram.ai/js/tma.js"></script>
     
     <style>
@@ -17,7 +14,6 @@
 </head>
 <body class="bg-gray-900 text-white font-sans min-h-screen flex flex-col justify-between pb-28">
 
-    <!-- Header: User Profile & Balance -->
     <div class="p-4 flex justify-between items-center bg-gray-800 rounded-b-2xl shadow-md">
         <div class="flex items-center gap-2">
             <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center font-bold text-lg" id="user-avatar">U</div>
@@ -32,10 +28,8 @@
         </div>
     </div>
 
-    <!-- Main Content Screens -->
     <main class="flex-1 flex flex-col items-center justify-center p-4">
         
-        <!-- SCREEN 1: THE CLICKER (TAP) -->
         <div id="screen-tap" class="flex flex-col items-center justify-center gap-6 w-full">
             <button id="coin-btn" class="w-48 h-48 bg-gradient-to-br from-yellow-400 to-amber-600 rounded-full shadow-2xl flex items-center justify-center border-8 border-yellow-500 transform active:scale-95 transition-transform duration-75 cursor-pointer">
                 <span class="text-6xl">🪙</span>
@@ -46,13 +40,11 @@
             <p class="text-sm text-gray-400"><span id="energy-text">500</span>/500 Clicks</p>
         </div>
 
-        <!-- SCREEN 2: FRIENDS (AFFILIATE ONLY) -->
         <div id="screen-friends" class="hidden flex flex-col items-center gap-4 w-full max-w-md">
             <div class="bg-gray-800 p-6 rounded-2xl w-full text-center shadow-lg">
                 <h3 class="text-lg font-bold mb-2">Invite Friends & Earn 👥</h3>
                 <p class="text-xs text-gray-400 mb-4">Earn <span class="text-green-400 font-bold">20% commission</span> instantly every time your friend makes a withdraw!</p>
                 
-                <!-- Share Link Box -->
                 <div class="bg-gray-900 p-3 rounded-xl flex justify-between items-center mb-4 border border-gray-700">
                     <input type="text" id="invite-link" readonly value="Loading link..." class="bg-transparent text-xs text-gray-300 w-full focus:outline-none">
                     <button onclick="copyInviteLink()" class="bg-blue-600 text-xs px-3 py-1.5 rounded-lg font-bold hover:bg-blue-700">Copy</button>
@@ -60,11 +52,10 @@
             </div>
         </div>
 
-        <!-- SCREEN 3: WITHDRAW (WALLET ONLY) -->
         <div id="screen-withdraw" class="hidden flex flex-col items-center gap-4 w-full max-w-md">
             <div class="bg-gray-800 p-6 rounded-2xl w-full shadow-lg text-center">
                 <h3 class="text-lg font-bold mb-2 text-yellow-400">Withdraw Balance 💳</h3>
-                <p class="text-xs text-gray-400 mb-6">Minimum limit for payout: <span class="text-amber-400 font-bold">300 🪙</span> ($0.03)</p>
+                <p class="text-xs text-gray-400 mb-6">Minimum limit for payout: <span class="text-amber-400 font-bold">300 🪙</span></p>
                 
                 <div class="grid grid-cols-2 gap-4 mb-6">
                     <div class="bg-gray-900 p-3 rounded-xl">
@@ -73,7 +64,7 @@
                     </div>
                     <div class="bg-gray-900 p-3 rounded-xl">
                         <p class="text-[10px] text-gray-500 mb-1">Estimated Value</p>
-                        <p class="text-xl font-black text-green-400" id="wallet-usd">$0.00</p>
+                        <p class="text-xl font-black text-green-400" id="wallet-usd">$0.0000</p>
                     </div>
                 </div>
 
@@ -83,7 +74,6 @@
             </div>
         </div>
 
-        <!-- SCREEN 4: OFFERWALLS & ADS (EARN) -->
         <div id="screen-earn" class="hidden flex flex-col gap-4 w-full max-w-md">
             <div class="bg-gray-800 p-4 rounded-xl flex justify-between items-center shadow">
                 <div>
@@ -104,7 +94,6 @@
 
     </main>
 
-    <!-- Bottom Navigation Bar -->
     <nav class="fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 flex justify-around p-2 z-50">
         <button onclick="switchScreen('tap')" class="flex flex-col items-center gap-1 text-yellow-400" id="nav-tap">
             <span class="text-xl">🎯</span><span class="text-xs">Tap</span>
@@ -120,7 +109,6 @@
         </button>
     </nav>
 
-    <!-- BANNER AD FIXED MEL LOUTA (MONETAG) -->
     <div class="fixed bottom-14 left-0 right-0 h-12 bg-gray-950 flex items-center justify-center z-50 border-t border-gray-800">
         <script type="text/javascript">
             atOptions = { 'key' : 'YOUR_MONETAG_BANNER_KEY', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };
@@ -166,8 +154,8 @@
         }, 2000);
 
         function updateBalanceUI() {
-            // Conversion calculus: 100 coin = 0.01$
-            let usdValue = (userBalance * 0.0001).toFixed(2);
+            // Updated calculus: 1000 coin = 0.01$ (Ya3ni 1 coin = 0.00001$)
+            let usdValue = (userBalance * 0.00001).toFixed(4);
 
             document.getElementById('balance').innerText = `${userBalance} 🪙`;
             document.getElementById('wallet-balance').innerText = `${userBalance} 🪙`;
