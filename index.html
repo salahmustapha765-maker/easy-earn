@@ -75,10 +75,18 @@
         </div>
 
         <div id="screen-earn" class="hidden flex flex-col gap-4 w-full max-w-md">
+            <div class="bg-gray-800 p-4 rounded-xl flex justify-between items-center shadow border border-blue-500/30">
+                <div>
+                    <h4 class="font-bold text-sm">Daily Check-In 🗓️</h4>
+                    <p class="text-xs text-gray-400">Claim free bonus every 24h</p>
+                </div>
+                <button id="daily-btn" onclick="claimDailyBonus()" class="bg-blue-600 hover:bg-blue-700 text-xs font-bold py-2 px-4 rounded-lg cursor-pointer transition">Claim +50 🪙</button>
+            </div>
+
             <div class="bg-gray-800 p-4 rounded-xl flex justify-between items-center shadow">
                 <div>
                     <h4 class="font-bold text-sm">Watch Video Ad 🎬</h4>
-                    <p class="text-xs text-gray-400">+50 Points instantly</p>
+                    <p class="text-xs text-gray-400">+70 Points instantly</p>
                 </div>
                 <button id="watch-ad-btn" class="bg-green-600 hover:bg-green-700 text-xs font-bold py-2 px-4 rounded-lg cursor-pointer">Watch</button>
             </div>
@@ -129,7 +137,6 @@
             document.getElementById('user-name').innerText = user.username || `${user.first_name}`;
             document.getElementById('user-id').innerText = `ID: ${user.id}`;
             document.getElementById('user-avatar').innerText = (user.username ? user.username[0] : user.first_name[0]).toUpperCase();
-            
             document.getElementById('invite-link').value = `https://t.me/ez_earns_bot/app?startapp=${user.id}`;
         }
 
@@ -154,9 +161,7 @@
         }, 2000);
 
         function updateBalanceUI() {
-            // Updated calculus: 1000 coin = 0.01$ (Ya3ni 1 coin = 0.00001$)
-            let usdValue = (userBalance * 0.00001).toFixed(4);
-
+            let usdValue = (userBalance * 0.00001).toFixed(4); // 1000 coin = 0.01$
             document.getElementById('balance').innerText = `${userBalance} 🪙`;
             document.getElementById('wallet-balance').innerText = `${userBalance} 🪙`;
             document.getElementById('wallet-usd').innerText = `$${usdValue}`;
@@ -188,6 +193,40 @@
             } else if (screen === 'earn') {
                 document.getElementById('screen-earn').classList.remove('hidden');
                 document.getElementById('nav-earn').className = "flex flex-col items-center gap-1 text-purple-400";
+                checkDailyStatusUI(); // Thabet fil-Check in local state
+            }
+        }
+
+        // 3. Daily Check-In Logic (LocalStorage Temporary baseline till backend)
+        function claimDailyBonus() {
+            const lastClaim = localStorage.getItem('lastCheckInClaim');
+            const now = new Date().getTime();
+
+            if (lastClaim && (now - lastClaim < 24 * 60 * 60 * 1000)) {
+                tele.showAlert("Arja3 ghodwa bch takhou bonus ekhar! 🗓️");
+                return;
+            }
+
+            userBalance += 50; // +50 points daily
+            localStorage.setItem('lastCheckInClaim', now);
+            updateBalanceUI();
+            checkDailyStatusUI();
+            tele.showAlert("Mabrouk! Khwaat +50 🪙 mta3 el-yom 🎉");
+        }
+
+        function checkDailyStatusUI() {
+            const lastClaim = localStorage.getItem('lastCheckInClaim');
+            const now = new Date().getTime();
+            const btn = document.getElementById('daily-btn');
+
+            if (lastClaim && (now - lastClaim < 24 * 60 * 60 * 1000)) {
+                btn.innerText = "Claimed ✓";
+                btn.className = "bg-gray-700 text-gray-400 text-xs font-bold py-2 px-4 rounded-lg cursor-not-allowed";
+                btn.disabled = true;
+            } else {
+                btn.innerText = "Claim +50 🪙";
+                btn.className = "bg-blue-600 hover:bg-blue-700 text-xs font-bold py-2 px-4 rounded-lg cursor-pointer transition";
+                btn.disabled = false;
             }
         }
 
@@ -198,7 +237,6 @@
             tele.showAlert("Invite link copied to clipboard! 🚀");
         }
 
-        // 3. Withdraw Trigger updated to 300 coins minimum
         function requestWithdraw() {
             if (userBalance < 300) {
                 tele.showAlert("Balancék mazal ne9es! Lezemik 300 🪙 3al-9ala.");
@@ -207,16 +245,16 @@
             tele.showAlert("Withdraw request sent! Processing... 💸");
         }
 
-        // 4. Adsgram & Offerwall
+        // 4. Adsgram (+70 Points Adjusted)
         const AdController = window.Adsgram?.init({ blockId: "36603" });
         document.getElementById('watch-ad-btn').addEventListener('click', () => {
             if (AdController) {
                 AdController.show().then(() => {
-                    userBalance += 50;
+                    userBalance += 70; // Changed to +70 pts
                     updateBalanceUI();
                 }).catch(() => { tele.showAlert("Kamel l-video lemejek points!"); });
             } else {
-                userBalance += 50;
+                userBalance += 70;
                 updateBalanceUI();
             }
         });
