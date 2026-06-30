@@ -64,11 +64,17 @@
         <div id="screen-withdraw" class="hidden flex flex-col items-center gap-4 w-full max-w-md">
             <div class="bg-gray-800 p-6 rounded-2xl w-full shadow-lg text-center">
                 <h3 class="text-lg font-bold mb-2 text-yellow-400">Withdraw Balance 💳</h3>
-                <p class="text-xs text-gray-400 mb-6">Minimum limit for payout: 50,000 🪙</p>
+                <p class="text-xs text-gray-400 mb-6">Minimum limit for payout: <span class="text-amber-400 font-bold">300 🪙</span> ($0.03)</p>
                 
-                <div class="mb-6">
-                    <p class="text-xs text-gray-500 mb-2">Your Current Funds</p>
-                    <p class="text-3xl font-black text-green-400 id='wallet-balance'">0 🪙</p>
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="bg-gray-900 p-3 rounded-xl">
+                        <p class="text-[10px] text-gray-500 mb-1">Coins Balance</p>
+                        <p class="text-xl font-black text-yellow-400" id="wallet-balance">0 🪙</p>
+                    </div>
+                    <div class="bg-gray-900 p-3 rounded-xl">
+                        <p class="text-[10px] text-gray-500 mb-1">Estimated Value</p>
+                        <p class="text-xl font-black text-green-400" id="wallet-usd">$0.00</p>
+                    </div>
                 </div>
 
                 <button onclick="requestWithdraw()" class="w-full bg-green-600 hover:bg-green-700 font-bold py-3 rounded-xl text-sm transition cursor-pointer">
@@ -98,7 +104,7 @@
 
     </main>
 
-    <!-- Bottom Navigation Bar (4 Options Now) -->
+    <!-- Bottom Navigation Bar -->
     <nav class="fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 flex justify-around p-2 z-50">
         <button onclick="switchScreen('tap')" class="flex flex-col items-center gap-1 text-yellow-400" id="nav-tap">
             <span class="text-xl">🎯</span><span class="text-xs">Tap</span>
@@ -160,13 +166,17 @@
         }, 2000);
 
         function updateBalanceUI() {
+            // Conversion calculus: 100 coin = 0.01$
+            let usdValue = (userBalance * 0.0001).toFixed(2);
+
             document.getElementById('balance').innerText = `${userBalance} 🪙`;
             document.getElementById('wallet-balance').innerText = `${userBalance} 🪙`;
+            document.getElementById('wallet-usd').innerText = `$${usdValue}`;
             document.getElementById('energy-text').innerText = availableClicks;
             document.getElementById('energy-bar').style.width = `${(availableClicks / 500) * 100}%`;
         }
 
-        // 2. Navigation Logic (Mregla b-4 Screens)
+        // 2. Navigation Logic
         function switchScreen(screen) {
             document.getElementById('screen-tap').classList.add('hidden');
             document.getElementById('screen-friends').classList.add('hidden');
@@ -200,10 +210,10 @@
             tele.showAlert("Invite link copied to clipboard! 🚀");
         }
 
-        // 3. Withdraw Trigger
+        // 3. Withdraw Trigger updated to 300 coins minimum
         function requestWithdraw() {
-            if (userBalance < 50000) {
-                tele.showAlert("Balancék mazal ne9es! Lezemik 50,000 🪙 3al-9ala.");
+            if (userBalance < 300) {
+                tele.showAlert("Balancék mazal ne9es! Lezemik 300 🪙 3al-9ala.");
                 return;
             }
             tele.showAlert("Withdraw request sent! Processing... 💸");
